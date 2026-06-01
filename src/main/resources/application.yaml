@@ -1,0 +1,16 @@
+spring:
+  application:
+    name: DocMindAi
+  datasource:
+    url: jdbc:postgresql://localhost:5432/doc_mind_db
+    username: postgres
+    password: 8941
+#    driver-class-name: org.postgres.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+file:
+  upload-dir: D:/DocMindAi/uploads
