@@ -4,6 +4,8 @@ import com.haider.DocMindAi.entity.DocumentEntity;
 import com.haider.DocMindAi.repo.DocumentRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -50,6 +52,23 @@ public class DocumentService {
         return documentRepo.save(document);
 
 
+    }
+
+    public Resource downloadDocument(Long id) {
+        DocumentEntity documentEntity = documentRepo.findById(id)
+                .orElseThrow(() ->
+                        new RuntimeException("Document not found"));
+        Path filePath = Paths.get(documentEntity.getFilePath());
+
+        try{
+            Resource resource = new UrlResource(filePath.toUri());
+            if (!resource.exists()) {
+                throw new RuntimeException("Document not found");
+            }
+            return resource;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
 }
