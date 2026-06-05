@@ -2,6 +2,9 @@ package com.haider.DocMindAi.service;
 
 import com.haider.DocMindAi.entity.DocumentEntity;
 import com.haider.DocMindAi.repo.DocumentRepo;
+import org.apache.pdfbox.Loader;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.text.PDFTextStripper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
@@ -49,6 +52,14 @@ public class DocumentService {
         document.setFilePath(filePath.toString());
         document.setActive(true);
 
+
+        File tempFile = File.createTempFile(fileName, ".pdf");
+        file.transferTo(tempFile); // multipart file to file
+        String text = extractTextFromDocument(tempFile);
+        document.setExtractedText(text);
+
+
+
         return documentRepo.save(document);
 
 
@@ -68,6 +79,13 @@ public class DocumentService {
             return resource;
         } catch (Exception e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    public String extractTextFromDocument(File file) throws IOException {
+        try (PDDocument document = Loader.loadPDF(file)) {
+            PDFTextStripper pdfTextStripper = new PDFTextStripper();
+            return  pdfTextStripper.getText(document);
         }
     }
 
